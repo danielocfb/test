@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  push:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache/restore@v4
+        id: restore-cached-kernel
+        with:
+          path: |
+            build/bzImage
+            build/vmlinux
+          key: linux-kernel-v1
+      - if: steps.restore-cached-kernel.outputs.cache-hit != 'true'
+        name: Install required tools
+        run: |
+          mkdir -p build
+          echo bzImage > build/bzImage
+          echo vmlinux > build/vmlinux
+      - if: steps.restore-cached-kernel.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            build/bzImage
+            build/vmlinux
+          key: linux-kernel-v1
